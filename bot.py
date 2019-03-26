@@ -86,11 +86,28 @@ def main():
     def answers(client, message):
         print(message)
         forfrom = int(message['reply_to_message']['forward_from']['id'])
-        text = message['text']
+
+        text = None
+        photo = None
+
+        if message['photo']:
+            photo = message['photo']['sizes'][-1]['file_id']
+            text = message['caption']
+        else:
+            text = message['text']
+
+        print(photo)
 
         while True:
             try:
-                app.send_message(forfrom, text)
+
+                if not photo:
+                    app.send_message(forfrom, text)
+                elif text and len(text) > 0:
+                    app.send_photo(forfrom, photo, text)
+                elif photo:
+                    app.send_photo(forfrom, photo)
+                
                 break
             except FloodWait as e:
                 print('neeed wait a bit %i before inviting'%e.x)
