@@ -84,7 +84,7 @@ def main():
 
     @app.on_message(Filters.incoming & Filters.reply & Filters.chat(settings['group']))
     def answers(client, message):
-        print(message)
+        # print(message)
         forfrom = int(message['reply_to_message']['forward_from']['id'])
 
         text = None
@@ -96,7 +96,7 @@ def main():
         else:
             text = message['text']
 
-        print(photo)
+        # print(photo)
 
         while True:
             try:
