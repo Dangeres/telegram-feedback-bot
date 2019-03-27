@@ -55,9 +55,28 @@ def main():
 
     app = Client(
         login_feedback['token'],
-        api_id=login_feedback["api_id"],
-        api_hash=login_feedback["api_hash"]
+        api_id = login_feedback["api_id"],
+        api_hash = login_feedback["api_hash"]
     )
+
+
+    def send_message(app, send_to, text = None, photo = None):
+        while True:
+            try:
+
+                if not photo:
+                    app.send_message(send_to, text)
+                elif text and len(text) > 0:
+                    app.send_photo(send_to, photo, text)
+                elif photo:
+                    app.send_photo(send_to, photo)
+                
+                break
+            except FloodWait as e:
+                print('neeed wait a bit %i before send message'%e.x)
+                time.sleep(e.x)
+            except Exception:
+                pass
 
 
     @app.on_message(Filters.incoming & Filters.command(['ban', 'unban']) & Filters.reply & Filters.chat(settings['group']))
@@ -79,7 +98,7 @@ def main():
 
         del file_
 
-        app.send_message(forfrom, 'Ты был %sбанен'%res)
+        send_message(app, forfrom, 'Ты был %sбанен' % res)
 
 
     @app.on_message(Filters.incoming & Filters.reply & Filters.chat(settings['group']))
@@ -96,25 +115,20 @@ def main():
         else:
             text = message['text']
 
-        # print(photo)
+        send_message(app, forfrom, text, photo)
+        
 
-        while True:
-            try:
+    @app.on_message(Filters.incoming & Filters.command(['start']))
+    def welcomer(client, message):
+        data_msg = message['text'].split(' ')
+        user = message['chat']['id']
+        username = '*скрыто*'
 
-                if not photo:
-                    app.send_message(forfrom, text)
-                elif text and len(text) > 0:
-                    app.send_photo(forfrom, photo, text)
-                elif photo:
-                    app.send_photo(forfrom, photo)
-                
-                break
-            except FloodWait as e:
-                print('neeed wait a bit %i before inviting'%e.x)
-                time.sleep(e.x)
-            except Exception:
-                pass
-    
+        if message['chat']['first_name']:
+            username = message['chat']['first_name']
+
+        send_message(app, user, "Здравствуйте, %s!\n\nНапишите ваш вопрос и мы ответим Вам в ближайшее время." % username)
+
 
     @app.on_message(Filters.incoming)
     def message_handler(clien, message):
@@ -130,7 +144,7 @@ def main():
                 app.forward_messages(settings['group'], user, mid)
                 break
             except FloodWait as e:
-                print('neeed wait a bit %i before inviting'%e.x)
+                print('neeed wait a bit %i before forward message'%e.x)
                 time.sleep(e.x)
             except Exception:
                 pass
