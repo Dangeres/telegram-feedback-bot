@@ -63,13 +63,13 @@ def main():
     def send_message(app, send_to, text = None, photo = None):
         while True:
             try:
-
-                if not photo:
-                    app.send_message(send_to, text)
+                if photo:
+                    if text and len(text) > 0:
+                        app.send_photo(send_to, photo, text)
+                    else:
+                        app.send_photo(send_to, photo)
                 elif text and len(text) > 0:
-                    app.send_photo(send_to, photo, text)
-                elif photo:
-                    app.send_photo(send_to, photo)
+                    app.send_message(send_to, text)
                 
                 break
             except FloodWait as e:
@@ -114,6 +114,8 @@ def main():
             text = message['caption']
         elif message['text'] and len(message['text']) > 0:
             text = message['text']
+
+        print(message)
 
         send_message(app, forfrom, text, photo)
         
