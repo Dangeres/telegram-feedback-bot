@@ -112,7 +112,7 @@ def main():
         if message['photo']:
             photo = message['photo']['sizes'][-1]['file_id']
             text = message['caption']
-        else:
+        elif message['text'] and len(message['text']) > 0:
             text = message['text']
 
         send_message(app, forfrom, text, photo)
