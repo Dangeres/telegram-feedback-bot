@@ -121,6 +121,9 @@ def main():
     @app.on_message(Filters.incoming & Filters.command(['start']))
     def welcomer(client, message):
         data_msg = message['text'].split(' ')
+
+        print(data_msg)
+
         user = message['chat']['id']
         username = '*скрыто*'
 
